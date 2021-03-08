@@ -1,25 +1,38 @@
-import React from 'react';
-import data from '../data.json';
+import React, { useState, useEffect } from 'react';
 
 const Post = () => {
 
-    const fetchedPost = data[0];
+    const [posts, setPosts] = useState([]);
 
-    const url = fetchedPost.image.url;
-    const description = fetchedPost.description;
-    const likes = fetchedPost.likes;
+    const getData = async () => {
+        const res = await fetch('http://localhost:1337/posts');
+        const data = await res.json();
+        setPosts(data)
+    }
+
+    useEffect(() => {
+        getData()
+    }, []);
 
     const API_URL = 'http://localhost:1337';
     const formatImageURL = (url) => `${API_URL}${url}`;
 
     return (
-        <div>
-            <img src={formatImageURL(url)} alt='imag' />
-            <h4>{description}</h4>
-            <div>
-                <span>Likes: {likes}</span>
-            </div>
-        </div>
+        <>
+            {
+                posts.map(item => (
+                    <div className="post" key={item.id}>
+                        <img className="post_image" src={formatImageURL(item.image.url)} alt='imag' />
+                        <h4>{item.description}</h4>
+                        <div>
+                            <span>Likes: {item.likes}</span>
+                        </div>
+                    </div>
+                )
+                )
+            }
+
+        </>
     )
 }
 
